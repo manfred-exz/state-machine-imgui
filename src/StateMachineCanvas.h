@@ -1,7 +1,13 @@
 ﻿#pragma once
 #include <imgui.h>
+#include <ccomplex>
+
 #include "Transition.h"
+inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs);
 inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs);
+inline ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs);
+inline ImVec2 operator*(const ImVec2& lhs, const double& factor);
+inline ImVec2 operator*(const double& factor, const ImVec2& rhs);
 
 class StateMachineCanvas
 {
@@ -124,5 +130,28 @@ public:
 			state_selected = state_hovered_in_list = trans_selected = -1;
 			open_context_menu = true;
 		}
+	}
+
+	void drawTriangleOnLine(ImDrawList* draw_list, ImVec2 from_pos, ImVec2 to_pos, ImColor color) const
+	{
+		const double arrow_height = 8, arrow_wighth = 3;
+
+		ImVec2 t1, t2, t3;
+		ImVec2 along, perp;
+
+		auto norm = [](ImVec2 vec) -> ImVec2
+		{
+			double len = std::sqrt(vec.x * vec.x + vec.y * vec.y);
+			return vec * (1 / len);
+		};
+
+		along = norm(to_pos - from_pos);
+		perp = ImVec2(-along.y, along.x);
+
+		t1 = (from_pos + to_pos) * 0.5;
+		t2 = t1 - along * arrow_height + perp * arrow_wighth;
+		t3 = t1 - along * arrow_height - perp * arrow_wighth;
+
+		draw_list->AddTriangleFilled(t1, t2, t3, color);
 	}
 };

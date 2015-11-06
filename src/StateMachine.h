@@ -45,7 +45,7 @@ public:
 		return nextTransitionID - 1;
 	}
 
-	Transition getTransition(const TransitionID& id)
+	Transition& getTransition(const TransitionID& id)
 	{
 		return transitions.at(id);
 	}
@@ -65,12 +65,12 @@ public:
 		return nextStateID - 1;
 	}
 
-	void setLineThickness(double thickness)
+	void setLineThickness(const double& thickness)
 	{
 		lineThickness = thickness;
 	}
 
-	bool onTransitionLine(StateID from, StateID to, ImVec2 mousePos)
+	bool onTransitionLine(StateID from, StateID to, ImVec2 mousePos) const 
 	{
 		auto from_pos = states[from].center();
 		auto to_pos = states[to].center();
@@ -85,7 +85,7 @@ public:
 		return squre_dist <= lineThickness * lineThickness ? true : false;
 	}
 
-	bool onTransitionLine(ImVec2 from_pos, ImVec2 to_pos, ImVec2 mousePos)
+	bool onTransitionLine(ImVec2 from_pos, ImVec2 to_pos, ImVec2 mousePos) const
 	{
 		/* test if mouse go out of rect_range(from_pos, to_pos) */
 		ImVec2 _test = (mousePos - from_pos) * (mousePos - to_pos);

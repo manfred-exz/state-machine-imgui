@@ -57,9 +57,37 @@ void ShowStateMachineGraph(bool* opened)
 	/* draw param panel: side bar */
 	ImGui::BeginChild("param panel", ImVec2(200, 0));
 	{
-		ImGui::Text("Test");
 		if (canvas.getStateSelected() >= 0) {
-			State _state = sMachine.states[canvas.getStateSelected()];
+			ImGui::Text("State");
+			State& _state = sMachine.states[canvas.getStateSelected()];
+			{
+				ImGui::TextWrapped("Name: ");
+				ImGui::SameLine();
+				ImGui::InputText("", _state.name, sizeof(_state.name) / sizeof(_state.name[0]));
+
+				ImGui::TextWrapped("Type: %s", _state.typeStr());
+			}
+
+			if (ImGui::CollapsingHeader("Transitions", nullptr, true, true))
+			{
+				for (TransitionID _transID : _state.transitions)
+				{
+					auto _trans = sMachine.getTransition(_transID);
+					ImGui::Text("%s -> %s", sMachine.states[_trans.fromID].name, sMachine.states[_trans.toID].name);
+				}
+				if (_state.transitions.size() == 0)
+					ImGui::Text("Empty");
+			}
+		}
+
+		if(canvas.getTransSelected() >= 0)
+		{
+			ImGui::Text("Transition");
+			Transition& _trans = sMachine.getTransition(canvas.getTransSelected());
+			ImGui::Text("%s -> %s", sMachine.states[_trans.fromID].name, sMachine.states[_trans.toID].name);
+			ImGui::Checkbox("solo:", &_trans.solo);
+			ImGui::Checkbox("mute:", &_trans.mute);
+			ImGui::Checkbox("hasExit:", &_trans.hasExit);
 		}
 	}
 	ImGui::EndChild();
@@ -239,12 +267,13 @@ void ShowStateMachineGraph(bool* opened)
 					canvas.selectTrans(pair.first);
 					anyTransSelected = true;
 					printf("selected trans id %d\n", pair.first);
+					canvas.drawTriangleOnLine(draw_list, from_pos, to_pos, ImColor(255, 255, 255));
 				}
 			}
 
-			if (!anyTransSelected) {
-				canvas.cancelSelectTrans();
-			}
+//			if (!anyTransSelected) {
+//				canvas.cancelSelectTrans();
+//			}
 		}
 
 
@@ -278,14 +307,10 @@ void ShowStateMachineGraph(bool* opened)
 			if (canvas.hasDrawingLine && ImGui::IsMouseClicked(0))
 			{
 				StateID transition_end_id = canvas.getStateHoveredInScene();
-//				StateID transition_end_id = canvas.getStateSelected();
 				canvas.hasDrawingLine = false;
 				/* if you didn't click on any state */
 				if (canvas.getStateHoveredInScene() != -1)
 					sMachine.addTransition(canvas.transition_start_id, transition_end_id);
-				else
-					int i = 5;
-				//				nodes[transition_start_id].addTransition(transition_end_id);
 			}
 		}
 

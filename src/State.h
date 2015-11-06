@@ -13,7 +13,7 @@ enum class StateType
 	NORMAL,
 	ENTRY,
 	ANY,
-	Exit,
+	EXIT,
 };
 
 /* define node data structure. */
@@ -48,9 +48,18 @@ public:
 		this->isDefault = false;
 	}
 
-	ImVec2 drawPos() { return center(); }
+	char * typeStr() const
+	{
+		char *_str[] = { "normal", "entry", "any", "exit" };
+
+		return _str[int(type)];
+	}
+
+	ImVec2 drawPos() const
+	{ return center(); }
 
 	/* todo: you have to make sure the field.size is updated. */
-	ImVec2 center() { return pos + ImVec2(size.x / 2, size.y / 2); }
+	ImVec2 center() const
+	{ return pos + ImVec2(size.x / 2, size.y / 2); }
 
 };
