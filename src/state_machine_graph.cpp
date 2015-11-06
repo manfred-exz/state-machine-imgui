@@ -149,6 +149,7 @@ void ShowStateMachineGraph(bool* opened)
 		}
 
 
+
 		/* draw nodes */
 		const ImVec2 NODE_WINDOW_PADDING(8.0f, 8.0f);
 		for (State &node : sMachine.states)
@@ -201,6 +202,7 @@ void ShowStateMachineGraph(bool* opened)
 				if (canvas.getStateSelected() != last_node_selected)
 					printf("active id: %d\n", canvas.getStateSelected());
 				last_node_selected = canvas.getStateSelected();
+
 
 				if (node_moving_active && ImGui::IsMouseDragging(0))
 					node.pos = node.pos + ImGui::GetIO().MouseDelta;

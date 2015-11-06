@@ -47,6 +47,7 @@ public:
 		return _res >= 0 ? _res : NUM_LAYERS - 1;
 	}
 
+<<<<<<< HEAD
 	void updateFrame(){
 		open_context_menu = false;
 		state_hovered_in_list = state_hovered_in_scene = state_widget_hovered  = -1;
@@ -99,6 +100,12 @@ public:
 	{
 		if (ImGui::IsMouseClicked(1))
 			this->open_context_menu = true;
+=======
+	void update()
+	{
+		open_context_menu = false;
+		state_hovered_in_list = -1;
+>>>>>>> fd8fadcacb79fee91e7e6cf52ec78dae969e842c
 	}
 
 	bool isContextMenuOpen() const
