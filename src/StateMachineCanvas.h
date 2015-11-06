@@ -29,5 +29,10 @@ public:
 		return _res >= 0 ? _res : NUM_LAYERS - 1;
 	}
 
+	void update()
+	{
+		open_context_menu = false;
+		state_hovered_in_list = -1;
+	}
 
 };
