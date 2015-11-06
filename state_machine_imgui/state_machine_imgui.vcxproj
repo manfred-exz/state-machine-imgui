@@ -153,6 +153,7 @@
     <ClInclude Include="..\src\StateMachineCanvas.h" />
     <ClInclude Include="..\src\state_machine_graph.h" />
     <ClInclude Include="..\src\Transition.h" />
+    <ClInclude Include="extra.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
