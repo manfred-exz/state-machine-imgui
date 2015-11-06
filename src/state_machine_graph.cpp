@@ -26,7 +26,7 @@ void ShowStateMachineGraph(bool* opened)
 	initExampleNodes(sMachine);
 
 	static StateMachineCanvas canvas;
-	static StateMachineCanvas backupCanvas;
+	StateMachineCanvas backupCanvas = canvas;
 	canvas.update();
 
 	/* node list: left bar*/
@@ -137,7 +137,7 @@ void ShowStateMachineGraph(bool* opened)
 
 			if(backupCanvas.state_hovered_in_scene >= 0)
 			{
-				ImGui::Text("State.name: %s", backupSMachine.states[backupCanvas.state_selected].name);
+				ImGui::Text("hoverd State.name: %s", backupSMachine.states[backupCanvas.state_hovered_in_scene].name);
 			}
 
 			if (backupCanvas.state_selected >= 0) {
@@ -201,8 +201,6 @@ void ShowStateMachineGraph(bool* opened)
 					canvas.state_hovered_in_scene = node.id;
 					canvas.open_context_menu |= ImGui::IsMouseClicked(1);	/* open right click on item context menu */
 				}
-				else
-					canvas.state_hovered_in_scene = -1;
 
 				/* select node item */
 				bool node_moving_active = ImGui::IsItemActive();
@@ -264,7 +262,7 @@ void ShowStateMachineGraph(bool* opened)
 		/* check if right click on window context menu */
 		if (!ImGui::IsAnyItemHovered() && ImGui::IsWindowHovered() && ImGui::IsMouseClicked(1))
 		{
-			canvas.state_selected = canvas.state_hovered_in_list = canvas.state_hovered_in_scene = canvas.trans_selected = -1;
+			canvas.state_selected = canvas.state_hovered_in_list = canvas.trans_selected = -1;
 			canvas.open_context_menu = true;
 		}
 
@@ -301,8 +299,10 @@ void ShowStateMachineGraph(bool* opened)
 				StateID transition_end_id = canvas.state_hovered_in_scene;
 				hasDrawingLine = false;
 				/* if you didn't click on any state */
-				if(canvas.state_hovered_in_scene != -1)
+				if (canvas.state_hovered_in_scene != -1)
 					sMachine.addTransition(transition_start_id, transition_end_id);
+				else
+					int i = 5;
 				//				nodes[transition_start_id].addTransition(transition_end_id);
 			}
 		}
@@ -359,7 +359,6 @@ void ShowStateMachineGraph(bool* opened)
 	ImGui::End();
 
 	backupSMachine = sMachine;
-	backupCanvas = canvas;
 }
 
 void initExampleNodes(StateMachine &sMachine)
