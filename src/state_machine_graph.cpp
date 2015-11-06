@@ -3,6 +3,7 @@
 #include <vector>
 #include "state_machine_graph.h"
 #include "StateMachine.h"
+#include "StateMachineCanvas.h"
 
 using std::vector;
 
@@ -21,14 +22,12 @@ void ShowStateMachineGraph(bool* opened)
 	}
 
 	static StateMachine sMachine;
+	static StateMachine backupSMachine;
 	initExampleNodes(sMachine);
 
-	/* params for nodes */
-	bool open_context_menu = false;
-	StateID state_hovered_in_list = -1;
-	static StateID state_hovered_in_scene = -1;
-	static StateID state_selected = -1;
-	static TransitionID trans_selected = -1;
+	static StateMachineCanvas canvas;
+	static StateMachineCanvas backupCanvas;
+	canvas.update();
 
 	/* node list: left bar*/
 	ImGui::BeginChild("node_list", ImVec2(100, 0));
@@ -40,14 +39,14 @@ void ShowStateMachineGraph(bool* opened)
 			State* node = &sMachine.states[node_idx];
 			ImGui::PushID(node->id);
 			/* draw and check if selected */
-			if (ImGui::Selectable(node->name, node->id == state_selected)) {
-				state_selected = node->id; trans_selected = -1;
+			if (ImGui::Selectable(node->name, node->id == canvas.state_selected)) {
+				canvas.state_selected = node->id; canvas.trans_selected = -1;
 			}
 			/* check if Hovered. */
 			if (ImGui::IsItemHovered())
 			{
-				state_hovered_in_list = node->id;
-				open_context_menu |= ImGui::IsMouseClicked(1);
+				canvas.state_hovered_in_list = node->id;
+				canvas.open_context_menu |= ImGui::IsMouseClicked(1);
 			}
 			ImGui::PopID();
 		}
@@ -60,8 +59,8 @@ void ShowStateMachineGraph(bool* opened)
 	ImGui::BeginChild("param panel", ImVec2(200, 0));
 	{
 		ImGui::Text("Test");
-		if (state_selected >= 0) {
-			State _state = sMachine.states[state_selected];
+		if (canvas.state_selected >= 0) {
+			State _state = sMachine.states[canvas.state_selected];
 		}
 	}
 	ImGui::EndChild();
@@ -118,64 +117,47 @@ void ShowStateMachineGraph(bool* opened)
 		if (node_debug)
 		{
 			draw_list->ChannelsSetCurrent(layer(0));	/* draw debug on top */
+			ImGui::Text("offset pos %f, %f", canvas_origin.x, canvas_origin.y);
 			ImGui::Text("mouse pos: %.2f %.2f", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
 
+			for (std::pair<TransitionID, Transition> pair : backupSMachine.transitions)
+			{
+				auto _trans = pair.second;
+				auto from_pos = canvas_origin + backupSMachine.states[_trans.fromID].center();
+				auto to_pos = canvas_origin + backupSMachine.states[_trans.toID].center();
+				if (backupSMachine.onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && backupCanvas.state_hovered_in_scene < 0) {
+					backupCanvas.trans_selected = pair.first;
+					ImGui::Text("hovered trans id %d", pair.first);
+				}
+				else
+				{
+					ImGui::Text("hovered nothing");
+				}
+			}
 
-			if (state_selected >= 0) {
-				State currState = sMachine.states[state_selected];
+			if(backupCanvas.state_hovered_in_scene >= 0)
+			{
+				ImGui::Text("State.name: %s", backupSMachine.states[backupCanvas.state_selected].name);
+			}
+
+			if (backupCanvas.state_selected >= 0) {
+				State currState = backupSMachine.states[backupCanvas.state_selected];
 				ImGui::Text("State.name: %s", currState.name);
 				for (TransitionID trans_id : currState.transitions)
 				{
-					auto _trans = sMachine.getTransition(trans_id);
+					auto _trans = backupSMachine.getTransition(trans_id);
 					ImGui::Text("\ttransition from %d to %d", _trans.fromID, _trans.toID);
 				}
 			}
 
-			if (trans_selected >= 0)
+			if (backupCanvas.trans_selected >= 0)
 			{
-				Transition currTransition = sMachine.getTransition(trans_selected);
+				Transition currTransition = backupSMachine.getTransition(backupCanvas.trans_selected);
 				ImGui::Text("Transition from %d to %d", currTransition.fromID, currTransition.toID);
 			}
 
 			if (ImGui::IsAnyItemHovered())
 				ImGui::Text("Hovered");
-		}
-
-		/* draw links */
-		draw_list->ChannelsSetCurrent(0); /* background */
-		float lineThickness = 3.0f;
-		sMachine.setLineThickness(lineThickness);
-		//		for (State state_from : sMachine.states)
-		//		{
-		//			auto pos_from = offset + state_from.center();
-		//			for (TransitionID trans_id : state_from.transitions)
-		//			{
-		//				auto trans = sMachine.getTransition(trans_id);
-		//				auto pos_to = offset + sMachine.states[trans.toID].center();
-		//				draw_list->AddLine(pos_from, pos_to, ImColor(200, 200, 100), lineThickness);
-		//				
-		//			}
-		//		}
-
-
-		ImGui::Text("offset pos %f, %f", canvas_origin.x, canvas_origin.y);
-		bool anyTransSelected = false;
-		for (std::pair<TransitionID, Transition> pair : sMachine.transitions)
-		{
-			auto _trans = pair.second;
-			auto from_pos = canvas_origin + sMachine.states[_trans.fromID].center();
-			auto to_pos = canvas_origin + sMachine.states[_trans.toID].center();
-			draw_list->AddLine(from_pos, to_pos, ImColor(200, 200, 100), lineThickness);
-			if (sMachine.onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && state_hovered_in_scene < 0) {
-				trans_selected = pair.first;
-				anyTransSelected = true;
-				ImGui::Text("hovered trans id %d", pair.first);
-			}
-		}
-
-		if(!anyTransSelected) {
-			trans_selected = -1;
-			ImGui::Text("hovered nothing");
 		}
 
 
@@ -216,23 +198,25 @@ void ShowStateMachineGraph(bool* opened)
 
 				/* hovered */
 				if (ImGui::IsItemHovered()) {
-					state_hovered_in_scene = node.id;
-					open_context_menu |= ImGui::IsMouseClicked(1);	/* open right click on item context menu */
+					canvas.state_hovered_in_scene = node.id;
+					canvas.open_context_menu |= ImGui::IsMouseClicked(1);	/* open right click on item context menu */
 				}
 				else
-					state_hovered_in_scene = -1;
+					canvas.state_hovered_in_scene = -1;
 
 				/* select node item */
 				bool node_moving_active = ImGui::IsItemActive();
-				if (node_widgets_active || node_moving_active) {
-					state_selected = node.id; trans_selected = -1;
+				bool right_click_select = ImGui::IsItemHovered() && ImGui::IsMouseClicked(1);	/* if you hover over the invisible button and right click, it's also select */
+
+				if (node_widgets_active || node_moving_active || right_click_select) {
+					canvas.state_selected = node.id; canvas.trans_selected = -1;
 				}
 
 				/* print node_selected to cmd */
 				static int last_node_selected = -1;
-				if (state_selected != last_node_selected)
-					printf("active id: %d\n", state_selected);
-				last_node_selected = state_selected;
+				if (canvas.state_selected != last_node_selected)
+					printf("active id: %d\n", canvas.state_selected);
+				last_node_selected = canvas.state_selected;
 
 				if (node_moving_active && ImGui::IsMouseDragging(0))
 					node.pos = node.pos + ImGui::GetIO().MouseDelta;
@@ -241,7 +225,7 @@ void ShowStateMachineGraph(bool* opened)
 			draw_list->ChannelsSetCurrent(layer(1));
 			/* draw node background */
 			{
-				ImU32 node_bg_color = (state_hovered_in_list == node.id || state_hovered_in_scene == node.id || (state_hovered_in_list == -1 && state_selected == node.id))
+				ImU32 node_bg_color = (canvas.state_hovered_in_list == node.id || canvas.state_hovered_in_scene == node.id || (canvas.state_hovered_in_list == -1 && canvas.state_selected == node.id))
 					? ImColor(75, 75, 75) : ImColor(60, 60, 60);
 
 				draw_list->AddRectFilled(node_rect_min, node_rect_max, node_bg_color, 4.0f);
@@ -251,24 +235,48 @@ void ShowStateMachineGraph(bool* opened)
 			ImGui::PopID();
 		}
 
+		/* draw links */
+		{
+			draw_list->ChannelsSetCurrent(0); /* background */
+			float lineThickness = 3.0f;
+			sMachine.setLineThickness(lineThickness);
+			
+			bool anyTransSelected = false;
+			for (std::pair<TransitionID, Transition> pair : sMachine.transitions)
+			{
+				auto _trans = pair.second;
+				auto from_pos = canvas_origin + sMachine.states[_trans.fromID].center();
+				auto to_pos = canvas_origin + sMachine.states[_trans.toID].center();
+				draw_list->AddLine(from_pos, to_pos, ImColor(200, 200, 100), lineThickness);
+				if (sMachine.onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && canvas.state_hovered_in_scene < 0) {
+					canvas.trans_selected = pair.first;
+					anyTransSelected = true;
+					printf("hovered trans id %d\n", pair.first);
+				}
+			}
+
+			if (!anyTransSelected) {
+				canvas.trans_selected = -1;
+			}
+		}
 
 
 		/* check if right click on window context menu */
 		if (!ImGui::IsAnyItemHovered() && ImGui::IsWindowHovered() && ImGui::IsMouseClicked(1))
 		{
-			state_selected = state_hovered_in_list = state_hovered_in_scene = trans_selected = -1;
-			open_context_menu = true;
+			canvas.state_selected = canvas.state_hovered_in_list = canvas.state_hovered_in_scene = canvas.trans_selected = -1;
+			canvas.open_context_menu = true;
 		}
 
 		/* open context menu */
-		if (open_context_menu)
+		if (canvas.open_context_menu)
 		{
 			ImGui::OpenPopup("context_menu");
-			if (state_hovered_in_list != -1) {
-				state_selected = state_hovered_in_list; trans_selected = -1;
+			if (canvas.state_hovered_in_list != -1) {
+				canvas.state_selected = canvas.state_hovered_in_list; canvas.trans_selected = -1;
 			}
-			if (state_hovered_in_scene != -1) {
-				state_selected = state_hovered_in_scene; trans_selected = -1;
+			if (canvas.state_hovered_in_scene != -1) {
+				canvas.state_selected = canvas.state_hovered_in_scene; canvas.trans_selected = -1;
 			}
 		}
 
@@ -290,9 +298,11 @@ void ShowStateMachineGraph(bool* opened)
 			/* finish drawing */
 			if (hasDrawingLine && ImGui::IsMouseClicked(0))
 			{
-				StateID transition_end_id = state_hovered_in_scene;
+				StateID transition_end_id = canvas.state_hovered_in_scene;
 				hasDrawingLine = false;
-				sMachine.addTransition(transition_start_id, transition_end_id);
+				/* if you didn't click on any state */
+				if(canvas.state_hovered_in_scene != -1)
+					sMachine.addTransition(transition_start_id, transition_end_id);
 				//				nodes[transition_start_id].addTransition(transition_end_id);
 			}
 		}
@@ -304,7 +314,7 @@ void ShowStateMachineGraph(bool* opened)
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 		if (ImGui::BeginPopup("context_menu"))
 		{
-			State* node = state_selected != -1 ? &sMachine.states[state_selected] : NULL;
+			State* node = canvas.state_selected != -1 ? &sMachine.states[canvas.state_selected] : NULL;
 			ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup() - canvas_origin;
 			if (node)
 			{
@@ -316,6 +326,7 @@ void ShowStateMachineGraph(bool* opened)
 					transition_start_id = node->id;
 					drawing_line_start = node->center() + canvas_origin;
 					darwing_line_color = ImColor(100, 255, 255);
+					printf("start form node id %d with node name %s\n", node->id, node->name);
 				};
 				if (ImGui::MenuItem("Rename..", NULL, false, false)) {}
 				if (ImGui::MenuItem("Delete", NULL, false, false)) {}
@@ -346,6 +357,9 @@ void ShowStateMachineGraph(bool* opened)
 	}
 
 	ImGui::End();
+
+	backupSMachine = sMachine;
+	backupCanvas = canvas;
 }
 
 void initExampleNodes(StateMachine &sMachine)
