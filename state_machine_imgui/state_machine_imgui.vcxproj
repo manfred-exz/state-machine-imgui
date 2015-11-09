@@ -69,10 +69,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,7 +88,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>D:\workspace\vs\state_machine_imgui\libs\imgui;D:\workspace\vs\state_machine_imgui\libs\gl3w;D:\workspace\vs\state_machine_imgui\libs\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\libs\pugixml;$(SolutionDir)\libs\imgui;$(SolutionDir)\libs\gl3w;$(SolutionDir)\libs\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -116,7 +116,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>D:\workspace\vs\state_machine_imgui\libs\imgui;D:\workspace\vs\state_machine_imgui\libs\gl3w;D:\workspace\vs\state_machine_imgui\libs\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\libs\pugixml;$(SolutionDir)\libs\imgui;$(SolutionDir)\libs\gl3w;$(SolutionDir)\libs\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -131,6 +131,7 @@
     <ClCompile Include="..\libs\imgui\imgui.cpp" />
     <ClCompile Include="..\libs\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\libs\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\libs\pugixml\pugixml.cpp" />
     <ClCompile Include="..\src\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="..\src\imgui_node_graph_test.cpp" />
     <ClCompile Include="..\src\main.cpp" />
@@ -146,6 +147,8 @@
     <ClInclude Include="..\libs\imgui\imconfig.h" />
     <ClInclude Include="..\libs\imgui\imgui.h" />
     <ClInclude Include="..\libs\imgui\imgui_internal.h" />
+    <ClInclude Include="..\libs\pugixml\pugiconfig.hpp" />
+    <ClInclude Include="..\libs\pugixml\pugixml.hpp" />
     <ClInclude Include="..\src\imgui_impl_glfw_gl3.h" />
     <ClInclude Include="..\src\imgui_node_graph_test.h" />
     <ClInclude Include="..\src\State.h" />

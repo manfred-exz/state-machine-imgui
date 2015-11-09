@@ -29,6 +29,16 @@ void ShowStateMachineGraph(bool* opened)
 	StateMachineCanvas backupCanvas = canvas;	/* for debug */
 	canvas.updateFrame();
 
+	if(ImGui::Button("Save XML"))
+	{
+		sMachine.XMLsave();
+	}
+
+	if(ImGui::Button("Load XML"))
+	{
+		sMachine.XMLparse("save_file_output.xml");
+	}
+
 	/* node list: left bar*/
 	ImGui::BeginChild("node_list", ImVec2(100, 0));
 	{
@@ -68,6 +78,7 @@ void ShowStateMachineGraph(bool* opened)
 				ImGui::TextWrapped("Type: %s", _state.typeStr());
 			}
 
+			/* todo: should add multi transition support */
 			if (ImGui::CollapsingHeader("Transitions", nullptr, true, true))
 			{
 				for (TransitionID _transID : _state.transitions)
@@ -309,8 +320,9 @@ void ShowStateMachineGraph(bool* opened)
 				StateID transition_end_id = canvas.getStateHoveredInScene();
 				canvas.hasDrawingLine = false;
 				/* if you didn't click on any state */
-				if (canvas.getStateHoveredInScene() != -1)
-					sMachine.addTransition(canvas.transition_start_id, transition_end_id);
+				if (canvas.getStateHoveredInScene() != -1) {
+					sMachine.addTransitionAndUpdateState(canvas.transition_start_id, transition_end_id);
+				}
 			}
 		}
 

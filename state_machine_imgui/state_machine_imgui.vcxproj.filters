@@ -19,6 +19,9 @@
     <Filter Include="gl3w">
       <UniqueIdentifier>{f65bae55-814b-4e96-a85d-78ada9d0f524}</UniqueIdentifier>
     </Filter>
+    <Filter Include="pugixml">
+      <UniqueIdentifier>{5defa36e-7744-44df-b01d-164fea8362df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\imgui_impl_glfw_gl3.cpp">
@@ -56,6 +59,9 @@
     </ClCompile>
     <ClCompile Include="..\libs\gl3w\GL\gl3w.c">
       <Filter>gl3w</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\pugixml\pugixml.cpp">
+      <Filter>pugixml</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="extra.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\pugixml\pugiconfig.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\pugixml\pugixml.hpp">
+      <Filter>pugixml</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

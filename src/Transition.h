@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <pugixml.hpp>
 typedef int StateID;
 typedef int TransitionID;
 
@@ -17,4 +18,19 @@ public:
 		  mute(mute),
 		  hasExit(has_exit)
 	{}
+
+	void gen_xml_node(pugi::xml_node root, TransitionID id)
+	{
+		auto _trans = root.append_child("transition");
+
+		_trans.append_attribute("id") = id;
+
+		_trans.append_attribute("fromID") = fromID;
+		_trans.append_attribute("toID") = toID;
+
+		_trans.append_attribute("solo") = solo;
+		_trans.append_attribute("mute") = mute;
+		_trans.append_attribute("hasExit") = hasExit;
+
+	}
 };

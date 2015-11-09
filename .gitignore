@@ -8,6 +8,7 @@
 *.sln.docstates
 libs/
 imgui.ini
+save_file_output.xml
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
