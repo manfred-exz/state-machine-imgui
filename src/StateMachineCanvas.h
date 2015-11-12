@@ -9,13 +9,11 @@ inline ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs);
 inline ImVec2 operator*(const ImVec2& lhs, const double& factor);
 inline ImVec2 operator*(const double& factor, const ImVec2& rhs);
 
+/* you must construct this class statically, otherwise it won't work through different frames */
 class StateMachineCanvas
 {
-public:
-	ImVec2 windowSize = ImVec2(700, 700);
-
-	/* user operation data */
 private:
+	/* select/hover operation and right click operation */
 	StateID state_hovered_in_list = -1;
 	StateID state_hovered_in_scene = -1;
 	StateID state_widget_hovered = -1;
@@ -25,7 +23,8 @@ private:
 	bool open_context_menu = false;
 
 public:
-
+	/* canvas attributes */
+	ImVec2 windowSize = ImVec2(700, 700);
 	ImVec2 scrolling = ImVec2(0.0f, 0.0f);	/* canvas_pos + scrolling == window_pos */
 	ImVec2 canvas_origin = ImVec2(0.0f, 0.0f);
 	bool show_grid = true;
@@ -42,10 +41,6 @@ public:
 
 	StateMachineCanvas(){}
 
-//	StateMachineCanvas operator=(const StateMachineCanvas in) {
-//		return *this;
-//	}
-
 	/* get the idx layer, 0 is the front, -1 is the last layer*/
 	int layer(const int& idx){
 		if (idx == -1) return 0;
@@ -53,11 +48,13 @@ public:
 		return _res >= 0 ? _res : NUM_LAYERS - 1;
 	}
 
+	/* some temperory field should be cleared. */
 	void updateFrame(){
 		open_context_menu = false;
 		state_hovered_in_list = state_hovered_in_scene = state_widget_hovered  = -1;
 	}
-
+	
+	/* this method is called when you start drawing your canvas, it won't work in other places. */
 	void udpateCanvasOrigin()
 	{
 		canvas_origin = ImGui::GetCursorScreenPos() - scrolling;

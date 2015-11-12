@@ -187,8 +187,6 @@ void ShowStateMachineGraph(bool* opened)
 				ImGui::Text("Hovered");
 		}
 
-
-
 		/* draw nodes */
 		const ImVec2 NODE_WINDOW_PADDING(8.0f, 8.0f);
 		for (State &node : sMachine.states)
@@ -278,7 +276,9 @@ void ShowStateMachineGraph(bool* opened)
 					canvas.selectTrans(pair.first);
 					anyTransSelected = true;
 					printf("selected trans id %d\n", pair.first);
-					canvas.drawTriangleOnLine(draw_list, from_pos, to_pos, ImColor(255, 255, 255));
+
+					/* todo: this line doesn't work right now */
+//					canvas.drawTriangleOnLine(draw_list, from_pos, to_pos, ImColor(255, 255, 255));
 				}
 			}
 
