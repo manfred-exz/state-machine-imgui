@@ -5,6 +5,7 @@
 #include "StateMachineLayer.h"
 #include "StateMachineCanvas.h"
 #include "StateMachinePainter.h"
+#include "StateMachine.h"
 
 using std::vector;
 
@@ -22,23 +23,37 @@ void ShowStateMachineGraph(bool* opened)
 		return;
 	}
 
-	static StateMachineLayer sMachine;
-	initExampleNodes(sMachine);
+	static StateMachine sMachine;
+	
+//	static StateMachineLayer baseLayer("Base Layer");
+	static StateMachineLayer baseLayer = sMachine.addLayer("Base Layer", true);
+
+	initExampleNodes(baseLayer);
 
 	static StateMachineCanvas canvas;
 	canvas.updateFrame();
 
-	static StateMachinePainter painter(&sMachine, &canvas);
+	static StateMachinePainter painter(&baseLayer, &canvas);
 
-	if(ImGui::Button("Save XML"))
+	ImGui::BeginGroup();
 	{
-		sMachine.XMLsave();
-	}
+		if (ImGui::Button("Save XML"))
+		{
+			baseLayer.XMLsave();
+		}
 
-	if(ImGui::Button("Load XML"))
-	{
-		sMachine.XMLparse("save_file_output.xml");
+		if (ImGui::Button("Load XML"))
+		{
+			baseLayer.XMLparse("save_file_output.xml");
+		}
 	}
+	ImGui::EndGroup();
+
+	ImGui::SameLine();
+
+	painter.drawLayerPanel();
+
+	ImGui::SameLine();
 
 	painter.drawNodeListBar();
 

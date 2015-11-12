@@ -1,10 +1,18 @@
 #include "StateMachinePainter.h"
 
+void StateMachinePainter::drawLayerPanel() const {
+	ImGui::BeginChild("layer_panel", ImVec2(100, 0));
+	{
+		ImGui::Text("Layers");
+		ImGui::SameLine(ImGui::GetWindowWidth() - 20);
+		ImGui::Button("+");
+	}
+	ImGui::EndChild();
+}
+
+
 void StateMachinePainter::drawNodeListBar() const
 {
-	if (currentLayer == nullptr || canvas == nullptr)
-		return;
-
 	/* node list: left bar*/
 	ImGui::BeginChild("node_list", ImVec2(100, 0));
 	{
@@ -18,8 +26,7 @@ void StateMachinePainter::drawNodeListBar() const
 			if (ImGui::Selectable(node->name, node->id == canvas->getStateSelected()))
 				canvas->selectState(node->id);
 			/* check if Hovered. */
-			if (ImGui::IsItemHovered())
-			{
+			if (ImGui::IsItemHovered()){
 				canvas->hoverStateList(node->id);
 				canvas->setContextMenu();
 			}
@@ -32,7 +39,7 @@ void StateMachinePainter::drawNodeListBar() const
 void StateMachinePainter::drawSideBar() const
 {
 	/* draw param panel: side bar */
-	ImGui::BeginChild("param panel", ImVec2(200, 0));
+	ImGui::BeginChild("param panel", ImVec2(150, 0));
 	{
 		if (canvas->getStateSelected() >= 0) {
 			ImGui::Text("State");
@@ -347,3 +354,4 @@ void StateMachinePainter::drawContextMenu() const {
 	}
 	ImGui::PopStyleVar();
 }
+

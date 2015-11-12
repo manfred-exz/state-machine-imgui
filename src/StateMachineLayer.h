@@ -6,14 +6,17 @@
 #include "Transition.h"
 #include <iostream>
 
+typedef unsigned int LayerID;
+enum class BlendMode { Override, Additive, };
+
 /* transitions are actually directly store in StateMachine, their reference will be store in State as well. 
  * use `addTransitionAndUpdateState()` when you want to add a transition */
 class StateMachineLayer
 {
 public:
-	enum class BlendMode { Override, Additive, };
+	char layerName[32];
+	LayerID id = 0;
 
-//	char * layerName;
 	unsigned int mask = 0;
 	BlendMode blendMode = BlendMode::Override;
 
@@ -23,17 +26,19 @@ public:
 
 
 private:
-	/* this value only increment in runtime */
+	/* these value only increment in runtime */
+	
 	StateID nextStateID = 0;
 	TransitionID nextTransitionID = 0;
-
-
 
 	double lineThickness = 3.0f;
 
 public:
-	StateMachineLayer()
-	{}
+
+	explicit StateMachineLayer(const char* layer_name) {
+		strncpy_s(layerName, layer_name, 31);
+		layerName[31] = 0;
+	}
 
 	TransitionID addTransitionAndUpdateState(const StateID& from, const StateID& to)
 	{

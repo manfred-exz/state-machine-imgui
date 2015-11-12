@@ -52,4 +52,6 @@ public:
 	void drawUnfinishedLine(ImDrawList& draw_list) const;
 
 	void drawContextMenu() const;
+
+	void drawLayerPanel() const;
 };
