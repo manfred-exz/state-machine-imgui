@@ -25,7 +25,6 @@ void ShowStateMachineGraph(bool* opened)
 
 	static StateMachine sMachine;
 	
-//	static StateMachineLayer baseLayer("Base Layer");
 	static StateMachineLayer baseLayer = sMachine.addLayer("Base Layer", true);
 
 	initExampleNodes(baseLayer);

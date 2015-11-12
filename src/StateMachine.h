@@ -1,24 +1,26 @@
 #pragma once
-#include <map>
+#include <algorithm>
+#include <list>
 #include "StateMachineLayer.h"
+
 
 class StateMachine
 {
 public:
-	std::map<LayerID, StateMachineLayer> layers;
-	LayerID baseLayerID = -1;
+	std::list<StateMachineLayer> layers;
+	StateMachineLayer* baseLayer = nullptr;
 
 private:
 	LayerID nextLayerID = 0;
 
 public:
 	StateMachineLayer& addLayer(const char * name, bool isBaseLayer = false) {
-		layers.insert({ nextLayerID, StateMachineLayer(name) });
+		layers.push_back(StateMachineLayer(name, nextLayerID));
 
 		if (isBaseLayer)
-			baseLayerID = nextLayerID;
+			baseLayer = &layers.back();
 
 		++nextLayerID;
-		return layers.at(nextLayerID - 1);
+		return layers.back();
 	}
 };

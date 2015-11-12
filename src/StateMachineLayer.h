@@ -35,9 +35,10 @@ private:
 
 public:
 
-	explicit StateMachineLayer(const char* layer_name) {
+	explicit StateMachineLayer(const char* layer_name, LayerID id) {
 		strncpy_s(layerName, layer_name, 31);
 		layerName[31] = 0;
+		this->id = id;
 	}
 
 	TransitionID addTransitionAndUpdateState(const StateID& from, const StateID& to)
