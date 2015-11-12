@@ -6,38 +6,34 @@
 #include "Transition.h"
 #include <iostream>
 
-/* transitions are actually directly store in StateMachine, their reference will be store in State as well. Remember to */
-class StateMachine
+/* transitions are actually directly store in StateMachine, their reference will be store in State as well. 
+ * use `addTransitionAndUpdateState()` when you want to add a transition */
+class StateMachineLayer
 {
 public:
+	enum class BlendMode { Override, Additive, };
+
+//	char * layerName;
+	unsigned int mask = 0;
+	BlendMode blendMode = BlendMode::Override;
+
 	std::vector<State> states;
-	//	std::vector<Transition> transitions;
 	std::map<TransitionID, Transition> transitions;
+
+
 
 private:
 	/* this value only increment in runtime */
-	StateID nextStateID;
-	TransitionID nextTransitionID;
+	StateID nextStateID = 0;
+	TransitionID nextTransitionID = 0;
+
+
 
 	double lineThickness = 3.0f;
 
 public:
-	StateMachine()
-	{
-		nextTransitionID = 0;
-		nextStateID = 0;
-	}
-
-	TransitionID addTransition(const StateID& from, const StateID& to)
-	{
-		Transition _trans(from, to);
-		transitions.insert({ nextTransitionID, _trans });
-//		states[from].transitions.push_back(nextTransitionID);	/* update transition id in state */
-
-		++nextTransitionID;
-
-		return nextTransitionID - 1;
-	}
+	StateMachineLayer()
+	{}
 
 	TransitionID addTransitionAndUpdateState(const StateID& from, const StateID& to)
 	{
@@ -45,14 +41,6 @@ public:
 		transitions.insert({ nextTransitionID, _trans });
 		states[from].transitions.push_back(nextTransitionID);	/* update transition id in state */
 
-		++nextTransitionID;
-
-		return nextTransitionID - 1;
-	}
-
-	TransitionID addTransition(const Transition& _trans)
-	{
-		transitions.insert({ nextTransitionID, _trans });
 		++nextTransitionID;
 
 		return nextTransitionID - 1;
@@ -117,7 +105,7 @@ public:
 		return (squre_dist <= (lineThickness / 2 + 1) * (lineThickness / 2 + 1)) ? true : false;
 	}
 
-	void XMLsave()
+	void XMLsave() const
 	{
 		pugi::xml_document doc;
 		doc.load_string("");
@@ -226,7 +214,7 @@ public:
 		return true;
 	}
 
-	void gen_xml_node(pugi::xml_node &root)
+	void gen_xml_node(pugi::xml_node &root) const
 	{
 		pugi::xml_node _node = root.append_child("stateMachine");
 		_node.set_name("sm_1");
@@ -258,5 +246,28 @@ public:
 		{
 			_node.append_attribute("lineThickness") = lineThickness;
 		}
+	}
+
+private:
+	/* note this function is used to add transition to state machine only, you'll have to update transition in state manually.
+	* Or you can call `callTransitionAndUpdateState()` */
+	TransitionID addTransition(const StateID& from, const StateID& to)
+	{
+		Transition _trans(from, to);
+		transitions.insert({ nextTransitionID, _trans });
+
+		++nextTransitionID;
+
+		return nextTransitionID - 1;
+	}
+
+	/* note this function is used to add transition to state machine only, you'll have to update transition in state manually.
+	* Or you can call `callTransitionAndUpdateState()` */
+	TransitionID addTransition(const Transition& _trans)
+	{
+		transitions.insert({ nextTransitionID, _trans });
+		++nextTransitionID;
+
+		return nextTransitionID - 1;
 	}
 };

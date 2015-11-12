@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 
 #include "imgui_node_graph_test.h"
-#include "StateMachine.h"
+#include "StateMachineLayer.h"
 #include <iostream>
 
 static void error_callback(int error, const char* description)

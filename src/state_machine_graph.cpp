@@ -2,13 +2,13 @@
 #include <memory>
 #include <vector>
 #include "state_machine_graph.h"
-#include "StateMachine.h"
+#include "StateMachineLayer.h"
 #include "StateMachineCanvas.h"
 
 using std::vector;
 
 void ShowStateMachineGraph(bool* opened);
-void initExampleNodes(StateMachine &sMachine);
+void initExampleNodes(StateMachineLayer &sMachine);
 
 void ShowStateMachineGraph(bool* opened)
 {
@@ -21,8 +21,8 @@ void ShowStateMachineGraph(bool* opened)
 		return;
 	}
 
-	static StateMachine sMachine;
-	static StateMachine backupSMachine;	/* for debug */
+	static StateMachineLayer sMachine;
+	static StateMachineLayer backupSMachine;	/* for debug */
 	initExampleNodes(sMachine);
 
 	static StateMachineCanvas canvas;
@@ -380,7 +380,7 @@ void ShowStateMachineGraph(bool* opened)
 	backupSMachine = sMachine;
 }
 
-void initExampleNodes(StateMachine &sMachine)
+void initExampleNodes(StateMachineLayer &sMachine)
 {
 	if (sMachine.states.size() != 0)
 		return;
