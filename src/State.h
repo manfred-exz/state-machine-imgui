@@ -2,7 +2,6 @@
 #include <imgui.h>
 #include <vector>
 #include "Transition.h"
-#include <pugixml.hpp>
 
 inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs);
 inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs);
@@ -75,59 +74,24 @@ public:
 		return center();
 	}
 
-	/* todo: you have to make sure the field.size is updated. */
+	/* todo:you have to make sure the field.size is updated. */
 	ImVec2 center() const
 	{
 		return pos + ImVec2(size.x / 2, size.y / 2);
 	}
 
-	void gen_xml_node(pugi::xml_node &root)
+	ImVec2 rectMin(ImVec2 canvasOrigin) const
 	{
-		auto _state_node = root.append_child("state");
-
-		/* attributes */
-		_state_node.append_attribute("id") = id;
-		if (name)
-			_state_node.append_attribute("name") = name;
-		else
-			_state_node.append_attribute("name") = "";
-		_state_node.append_attribute("type") = unsigned int(type);
-
-		/* positions */
-		{
-			auto _pos = _state_node.append_child("pos");
-			_pos.append_attribute("x") = pos.x;
-			_pos.append_attribute("y") = pos.y;
-		}
-
-		/* size */
-		{
-			auto _size = _state_node.append_child("size");
-			_size.append_attribute("width") = size.x;
-			_size.append_attribute("height") = size.y;
-		}
-
-		/* color */
-		{
-			auto _color = _state_node.append_child("color");
-			_color.append_attribute("r") = color.x;
-			_color.append_attribute("g") = color.y;
-			_color.append_attribute("b") = color.z;
-			_color.append_attribute("a") = color.w;
-		}
-
-		_state_node.append_attribute("isDefault") = isDefault;
-
-		/* transitions */
-		{
-			auto _transitions = _state_node.append_child("transitions");
-			for (TransitionID transition_id : transitions)
-			{
-				_transitions.append_attribute("id") = transition_id;
-			}
-		}
+		return canvasOrigin + pos;
 	}
-	
+
+	ImVec2 rectMax(ImVec2 canvasOrigin) const
+	{
+		return canvasOrigin + pos + size;
+	}
+
+	void gen_xml_node(pugi::xml_node& root) const;
+
 	//	static char* toString(float data, unsigned int precision = 4)
 	//	{
 	//		char format[50];

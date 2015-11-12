@@ -23,14 +23,12 @@ void ShowStateMachineGraph(bool* opened)
 	}
 
 	static StateMachineLayer sMachine;
-	static StateMachineLayer backupSMachine;	/* for debug */
 	initExampleNodes(sMachine);
 
 	static StateMachineCanvas canvas;
-	StateMachineCanvas backupCanvas = canvas;	/* for debug */
 	canvas.updateFrame();
 
-	StateMachinePainter painter(&sMachine, &canvas);
+	static StateMachinePainter painter(&sMachine, &canvas);
 
 	if(ImGui::Button("Save XML"))
 	{
@@ -53,8 +51,6 @@ void ShowStateMachineGraph(bool* opened)
 	painter.drawCanvas();
 
 	ImGui::End();
-
-	backupSMachine = sMachine;
 }
 
 void initExampleNodes(StateMachineLayer &sMachine)

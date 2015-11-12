@@ -24,10 +24,7 @@ private:
 
 public:
 	/* canvas attributes */
-	ImVec2 windowSize = ImVec2(700, 700);
-	ImVec2 scrolling = ImVec2(0.0f, 0.0f);	/* canvas_pos + scrolling == window_pos */
-	ImVec2 canvas_origin = ImVec2(0.0f, 0.0f);
-	bool show_grid = true;
+
 
 	bool node_debug = true;
 
@@ -42,7 +39,7 @@ public:
 	StateMachineCanvas(){}
 
 	/* get the idx layer, 0 is the front, -1 is the last layer*/
-	int layer(const int& idx){
+	int layer(const int& idx) const {
 		if (idx == -1) return 0;
 		int _res = NUM_LAYERS - 1 - idx;
 		return _res >= 0 ? _res : NUM_LAYERS - 1;
@@ -52,12 +49,6 @@ public:
 	void updateFrame(){
 		open_context_menu = false;
 		state_hovered_in_list = state_hovered_in_scene = state_widget_hovered  = -1;
-	}
-	
-	/* this method is called when you start drawing your canvas, it won't work in other places. */
-	void udpateCanvasOrigin()
-	{
-		canvas_origin = ImGui::GetCursorScreenPos() - scrolling;
 	}
 
 	void selectState(StateID id){
