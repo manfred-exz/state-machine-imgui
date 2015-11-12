@@ -183,6 +183,7 @@ public:
 				StateType _type = (StateType)state.attribute("type").as_int();
 				bool _isDefulat = state.attribute("isDefault").as_bool();
 
+#pragma warning(disable: 4244)
 				ImVec2 _pos;
 				_pos.x = state.child("pos").attribute("x").as_double();
 				_pos.y = state.child("pos").attribute("y").as_double();
@@ -196,8 +197,8 @@ public:
 				_color.y = state.child("color").attribute("g").as_double();
 				_color.z = state.child("color").attribute("b").as_double();
 				_color.w = state.child("color").attribute("a").as_double();
-
-				states.push_back(State(_id, _name.c_str(), _pos, _transitionIDs, _type, _color));
+#pragma warning(default: 4244)
+				states.push_back(State(_id, _name.c_str(), _pos, _size, _color, _type, _transitionIDs, _isDefulat));
 			}
 		}
 

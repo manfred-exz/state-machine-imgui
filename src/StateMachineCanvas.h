@@ -42,9 +42,9 @@ public:
 
 	StateMachineCanvas(){}
 
-	StateMachineCanvas operator=(const StateMachineCanvas in) {
-		return *this;
-	}
+//	StateMachineCanvas operator=(const StateMachineCanvas in) {
+//		return *this;
+//	}
 
 	/* get the idx layer, 0 is the front, -1 is the last layer*/
 	int layer(const int& idx){
@@ -118,9 +118,9 @@ public:
 		return state_widget_hovered;
 	}
 
-	void setStateWidgetHovered(StateID state_widget_hovered)
+	void setStateWidgetHovered(StateID _state_widget_hovered)
 	{
-		this->state_widget_hovered = state_widget_hovered;
+		this->state_widget_hovered = _state_widget_hovered;
 	}
 
 	void checkWindowRightClick()
