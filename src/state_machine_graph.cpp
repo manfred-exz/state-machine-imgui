@@ -3,7 +3,7 @@
 #include <vector>
 #include "state_machine_graph.h"
 #include "StateMachineLayer.h"
-#include "StateMachineCanvas.h"
+#include "StateMachineInteraction.h"
 #include "StateMachinePainter.h"
 #include "StateMachine.h"
 
@@ -25,11 +25,10 @@ void ShowStateMachineGraph(bool* opened)
 
 	static StateMachine sMachine;
 	
-	static StateMachineLayer baseLayer = sMachine.addLayer("Base Layer", true);
-
+	static StateMachineLayer &baseLayer = sMachine.addLayer("Base Layer", true);
 	initExampleNodes(baseLayer);
 
-	static StateMachineCanvas canvas;
+	static StateMachineInteraction canvas;
 	canvas.updateFrame();
 
 	static StateMachinePainter painter(&baseLayer, &canvas);
@@ -50,7 +49,7 @@ void ShowStateMachineGraph(bool* opened)
 
 	ImGui::SameLine();
 
-	painter.drawLayerPanel();
+	painter.drawLayerPanel(sMachine);
 
 	ImGui::SameLine();
 

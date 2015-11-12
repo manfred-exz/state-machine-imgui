@@ -3,6 +3,7 @@
 #include <ccomplex>
 
 #include "Transition.h"
+#include "StateMachineLayer.h"
 inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs);
 inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs);
 inline ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs);
@@ -10,10 +11,12 @@ inline ImVec2 operator*(const ImVec2& lhs, const double& factor);
 inline ImVec2 operator*(const double& factor, const ImVec2& rhs);
 
 /* you must construct this class statically, otherwise it won't work through different frames */
-class StateMachineCanvas
+class StateMachineInteraction
 {
 private:
 	/* select/hover operation and right click operation */
+	LayerID layer_selected = -1;
+
 	StateID state_hovered_in_list = -1;
 	StateID state_hovered_in_scene = -1;
 	StateID state_widget_hovered = -1;
@@ -36,7 +39,7 @@ public:
 	ImColor darwing_line_color = ImColor(200, 50, 50);
 
 
-	StateMachineCanvas(){}
+	StateMachineInteraction(){}
 
 	/* get the idx layer, 0 is the front, -1 is the last layer*/
 	int layer(const int& idx) const {
@@ -56,6 +59,13 @@ public:
 		trans_selected = -1;
 	}
 
+	void selectLayer(LayerID id) {
+		if (layer_selected != -1 && layer_selected != id)
+			state_selected = trans_selected = -1;
+
+		layer_selected = id;
+	}
+
 	void hoverStateList(StateID id){state_hovered_in_list = id;}
 
 	void hoverStateScene(StateID id){state_hovered_in_scene = id;}
@@ -67,6 +77,9 @@ public:
 
 	void cancelSelectTrans(){trans_selected = -1;}
 
+	LayerID getLayerSelected() const {
+		return layer_selected;
+	}
 
 	StateID getStateHoveredInList() const
 	{

@@ -1,12 +1,13 @@
 #pragma once
 #include "state_machine_graph.h"
+#include "StateMachine.h"
 #include "StateMachineLayer.h"
-#include "StateMachineCanvas.h"
+#include "StateMachineInteraction.h"
 
 class StateMachinePainter
 {
 	StateMachineLayer *currentLayer = nullptr;
-	StateMachineCanvas *canvas = nullptr;
+	StateMachineInteraction *interaction = nullptr;
 
 	ImVec2 windowSize = ImVec2(700, 700);
 	ImVec2 scrolling = ImVec2(0.0f, 0.0f);	/* canvas_pos + scrolling == window_pos */
@@ -16,9 +17,9 @@ class StateMachinePainter
 	const ImVec2 NODE_WINDOW_PADDING = ImVec2(8.0f, 8.0f);
 
 public:
-	StateMachinePainter(StateMachineLayer* current_layer, StateMachineCanvas* canvas)
+	StateMachinePainter(StateMachineLayer* current_layer, StateMachineInteraction* canvas)
 		: currentLayer(current_layer),
-		  canvas(canvas)
+		  interaction(canvas)
 	{}
 
 	/* this method is called when you start drawing your canvas, it won't work in other places. */
@@ -32,9 +33,9 @@ public:
 		currentLayer = newLayer;
 	}
 
-	void switchCanvas(StateMachineCanvas *newCanvas)
+	void switchCanvas(StateMachineInteraction *newCanvas)
 	{
-		canvas = newCanvas;
+		interaction = newCanvas;
 	}
 
 	void drawNodeListBar() const;
@@ -53,5 +54,5 @@ public:
 
 	void drawContextMenu() const;
 
-	void drawLayerPanel() const;
+	void drawLayerPanel(StateMachine& sMachine);
 };

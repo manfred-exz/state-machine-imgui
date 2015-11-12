@@ -39,9 +39,6 @@
     <ClCompile Include="..\src\state_machine_graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\StateMachineCanvas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Transition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,6 +66,9 @@
     <ClCompile Include="..\src\StateMachinePainter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\StateMachineInteraction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\imgui_impl_glfw_gl3.h">
@@ -81,9 +81,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\state_machine_graph.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\StateMachineCanvas.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Transition.h">
@@ -120,6 +117,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\StateMachinePainter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StateMachineInteraction.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

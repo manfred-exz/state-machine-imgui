@@ -137,7 +137,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\State.cpp" />
     <ClCompile Include="..\src\StateMachine.cpp" />
-    <ClCompile Include="..\src\StateMachineCanvas.cpp" />
+    <ClCompile Include="..\src\StateMachineInteraction.cpp" />
     <ClCompile Include="..\src\StateMachineLayer.cpp" />
     <ClCompile Include="..\src\StateMachinePainter.cpp" />
     <ClCompile Include="..\src\state_machine_graph.cpp" />
@@ -155,7 +155,7 @@
     <ClInclude Include="..\src\imgui_node_graph_test.h" />
     <ClInclude Include="..\src\State.h" />
     <ClInclude Include="..\src\StateMachine.h" />
-    <ClInclude Include="..\src\StateMachineCanvas.h" />
+    <ClInclude Include="..\src\StateMachineInteraction.h" />
     <ClInclude Include="..\src\StateMachineLayer.h" />
     <ClInclude Include="..\src\StateMachinePainter.h" />
     <ClInclude Include="..\src\state_machine_graph.h" />

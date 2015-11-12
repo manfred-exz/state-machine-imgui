@@ -7,14 +7,16 @@
 #include <iostream>
 
 typedef unsigned int LayerID;
-enum class BlendMode { Override, Additive, };
+enum class BlendMode {
+	Override, Additive,
+};
 
 /* transitions are actually directly store in StateMachine, their reference will be store in State as well. 
  * use `addTransitionAndUpdateState()` when you want to add a transition */
 class StateMachineLayer
 {
 public:
-	char layerName[32];
+	char name[32];
 	LayerID id = 0;
 
 	unsigned int mask = 0;
@@ -22,8 +24,6 @@ public:
 
 	std::vector<State> states;
 	std::map<TransitionID, Transition> transitions;
-
-
 
 private:
 	/* these value only increment in runtime */
@@ -36,8 +36,8 @@ private:
 public:
 
 	explicit StateMachineLayer(const char* layer_name, LayerID id) {
-		strncpy_s(layerName, layer_name, 31);
-		layerName[31] = 0;
+		strncpy_s(name, layer_name, 31);
+		name[31] = 0;
 		this->id = id;
 	}
 
