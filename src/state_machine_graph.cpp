@@ -4,6 +4,7 @@
 #include "state_machine_graph.h"
 #include "StateMachineLayer.h"
 #include "StateMachineCanvas.h"
+#include "StateMachinePainter.h"
 
 using std::vector;
 
@@ -29,6 +30,8 @@ void ShowStateMachineGraph(bool* opened)
 	StateMachineCanvas backupCanvas = canvas;	/* for debug */
 	canvas.updateFrame();
 
+	StateMachinePainter painter(&sMachine, &canvas);
+
 	if(ImGui::Button("Save XML"))
 	{
 		sMachine.XMLsave();
@@ -39,28 +42,7 @@ void ShowStateMachineGraph(bool* opened)
 		sMachine.XMLparse("save_file_output.xml");
 	}
 
-	/* node list: left bar*/
-	ImGui::BeginChild("node_list", ImVec2(100, 0));
-	{
-		ImGui::Text("Nodes");
-		ImGui::Separator();
-		for (auto node_idx = 0; node_idx < sMachine.states.size(); node_idx++)
-		{
-			State* node = &sMachine.states[node_idx];
-			ImGui::PushID(node->id);
-			/* draw and check if selected */
-			if (ImGui::Selectable(node->name, node->id == canvas.getStateSelected()))
-				canvas.selectState(node->id);
-			/* check if Hovered. */
-			if (ImGui::IsItemHovered())
-			{
-				canvas.hoverStateList(node->id);
-				canvas.setContextMenu();
-			}
-			ImGui::PopID();
-		}
-	}
-	ImGui::EndChild();
+	painter.drawNodeListBar();
 
 	ImGui::SameLine();
 

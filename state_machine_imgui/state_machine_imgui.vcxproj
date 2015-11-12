@@ -139,6 +139,7 @@
     <ClCompile Include="..\src\StateMachine.cpp" />
     <ClCompile Include="..\src\StateMachineCanvas.cpp" />
     <ClCompile Include="..\src\StateMachineLayer.cpp" />
+    <ClCompile Include="..\src\StateMachinePainter.cpp" />
     <ClCompile Include="..\src\state_machine_graph.cpp" />
     <ClCompile Include="..\src\Transition.cpp" />
   </ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="..\src\StateMachine.h" />
     <ClInclude Include="..\src\StateMachineCanvas.h" />
     <ClInclude Include="..\src\StateMachineLayer.h" />
+    <ClInclude Include="..\src\StateMachinePainter.h" />
     <ClInclude Include="..\src\state_machine_graph.h" />
     <ClInclude Include="..\src\Transition.h" />
     <ClInclude Include="extra.h" />
