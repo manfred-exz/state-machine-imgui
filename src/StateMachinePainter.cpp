@@ -13,27 +13,29 @@ void StateMachinePainter::drawLayerPanel(StateMachine& sMachine) {
 			ImGui::PushID(_layer.id); /* if you don't push/pop id, then imgui won't be able to distinguish InputText/Combo/... for different layers */
 
 			ImGui::Separator();
-			bool _old_any_active = ImGui::IsAnyItemActive();
 			ImGui::BeginGroup();
 			{
 				ImGui::InputText("", _layer.name, sizeof(_layer.name) / sizeof(_layer.name[0]));
 				const char *items[] = { "Override", "Additive" }; /* can be improved */
 				ImGui::Text("Blending"); ImGui::SameLine();
 				ImGui::Combo("", (int *)&_layer.blendMode, items, sizeof(items) / sizeof(items[0]));
-
 			}
 			ImGui::EndGroup();
-			bool _widgets_active = (!_old_any_active && ImGui::IsAnyItemActive());
 
-			ImGui::SetCursorScreenPos(ImGui::GetItemRectMin());
-			ImGui::InvisibleButton("layer", ImGui::GetItemRectSize());
+			/* select layer */
+			{
+				auto _rectMin = ImGui::GetItemRectMin();
+				auto _rectMax = ImGui::GetItemRectMax();
 
-			bool _click_active = ImGui::IsItemActive();
+				bool _click_active = false;
+				if (ImGui::IsMouseReleased(0) && _rectMin < ImGui::GetMousePos() && ImGui::GetMousePos() < _rectMax)
+					_click_active = true;
 
-			if ((_widgets_active || _click_active) && interaction->getLayerSelected() != _layer.id) {
-				printf("clicked, %s changed to %s\n", currentLayer->name, _layer.name);
-				interaction->selectLayer(_layer.id);
-				currentLayer = &_layer;
+				if (_click_active && interaction->getLayerSelected() != _layer.id) {
+					printf("clicked, %s changed to %s\n", currentLayer->name, _layer.name);
+					interaction->selectLayer(_layer.id);
+					currentLayer = &_layer;
+				}
 			}
 
 			ImGui::PopID();

@@ -9,6 +9,7 @@ inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs);
 inline ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs);
 inline ImVec2 operator*(const ImVec2& lhs, const double& factor);
 inline ImVec2 operator*(const double& factor, const ImVec2& rhs);
+inline bool operator<(const ImVec2& lhs, const ImVec2& rhs);
 
 /* you must construct this class statically, otherwise it won't work through different frames */
 class StateMachineInteraction
