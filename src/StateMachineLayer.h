@@ -17,10 +17,10 @@ class StateMachineLayer
 {
 public:
 	char name[32];
-	LayerID id = 0;
+	LayerID id;
 
-	unsigned int mask = 0;
-	BlendMode blendMode = BlendMode::Override;
+	unsigned int mask;
+	BlendMode blendMode;
 
 	std::vector<State> states;
 	std::map<TransitionID, Transition> transitions;
@@ -28,23 +28,29 @@ public:
 private:
 	/* these value only increment in runtime */
 	
-	StateID nextStateID = 0;
-	TransitionID nextTransitionID = 0;
+	StateID nextStateID;
+	TransitionID nextTransitionID;
 
 //	double lineThickness = 3.0f;
 
 public:
 
-	explicit StateMachineLayer(const char* layer_name, LayerID id) {
+	explicit StateMachineLayer(const char* layer_name, LayerID id = 0) {
 		strncpy_s(name, layer_name, 31);
 		name[31] = 0;
 		this->id = id;
+
+		mask = 0;
+		blendMode = BlendMode::Override;
+
+		nextStateID = 0;
+		nextTransitionID = 0;
 	}
 
 	TransitionID addTransitionAndUpdateState(const StateID& from, const StateID& to)
 	{
 		Transition _trans(from, to);
-		transitions.insert({ nextTransitionID, _trans });
+		transitions.insert(std::pair<TransitionID, Transition>(nextTransitionID, _trans));
 		states[from].transitions.push_back(nextTransitionID);	/* update transition id in state */
 
 		++nextTransitionID;
@@ -173,7 +179,7 @@ public:
 				bool _mute = _trans_node.attribute("mute").as_bool();
 				bool _hasExit = _trans_node.attribute("hasExit").as_bool();
 
-				transitions.insert({ _id, Transition(_fromID, _toID, _solo, _mute, _hasExit) });
+				transitions.insert(std::pair<TransitionID, Transition>(_id, Transition(_fromID, _toID, _solo, _mute, _hasExit)));
 			}
 		}
 
@@ -215,7 +221,8 @@ private:
 	TransitionID addTransition(const StateID& from, const StateID& to)
 	{
 		Transition _trans(from, to);
-		transitions.insert({ nextTransitionID, _trans });
+		transitions.insert(std::pair<TransitionID, Transition>(nextTransitionID, _trans));
+
 
 		++nextTransitionID;
 
@@ -226,7 +233,7 @@ private:
 	* Or you can call `callTransitionAndUpdateState()` */
 	TransitionID addTransition(const Transition& _trans)
 	{
-		transitions.insert({ nextTransitionID, _trans });
+		transitions.insert(std::pair<TransitionID, Transition>(nextTransitionID, _trans));
 		++nextTransitionID;
 
 		return nextTransitionID - 1;

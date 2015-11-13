@@ -8,12 +8,19 @@ class StateMachine
 {
 public:
 	std::list<StateMachineLayer> layers;
-	StateMachineLayer* baseLayer = nullptr;
+	StateMachineLayer* baseLayer;
 
 private:
-	LayerID nextLayerID = 0;
+	LayerID nextLayerID;
 
 public:
+
+
+	StateMachine() {
+		baseLayer = nullptr;
+		nextLayerID = 0;
+	}
+
 	StateMachineLayer& addLayer(const char * name, bool isBaseLayer = false) {
 		layers.push_back(StateMachineLayer(name, nextLayerID));
 

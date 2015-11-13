@@ -72,7 +72,10 @@ void initExampleNodes(StateMachineLayer &sMachine)
 		return;
 	printf("check.\n");
 
-	sMachine.addState("MainTex", ImVec2(140, 50), vector<StateID>{1, 2});
-	sMachine.addState("BumpMap", ImVec2(140, 150), vector<StateID>{});
-	sMachine.addState("Combine", ImVec2(370, 80), vector<StateID>{});
+	auto _vec = vector<StateID>();
+	_vec.push_back(1); _vec.push_back(2);
+
+	sMachine.addState("MainTex", ImVec2(140, 50), _vec);
+	sMachine.addState("BumpMap", ImVec2(140, 150), vector<StateID>());
+	sMachine.addState("Combine", ImVec2(370, 80), vector<StateID>());
 }

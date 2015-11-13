@@ -7,22 +7,38 @@
 /* since in ImGui drawing and interaction are together, this class also handle all the interaction */
 class StateMachinePainter
 {
-	StateMachineLayer *currentLayer = nullptr;
-	StateMachineInteraction *interaction = nullptr;
+	StateMachineLayer *currentLayer;
+	StateMachineInteraction *interaction;
 
-	ImVec2 windowSize = ImVec2(700, 700);
-	ImVec2 scrolling = ImVec2(0.0f, 0.0f);	/* canvas_pos + scrolling == window_pos */
-	ImVec2 canvas_origin = ImVec2(0.0f, 0.0f);
-	bool show_grid = true;
+	ImVec2 windowSize;
+	ImVec2 scrolling;	/* canvas_pos + scrolling == window_pos */
+	ImVec2 canvas_origin;
+	bool show_grid;
 
-	double lineThickness = 3.0f;
+	double lineThickness;
+	ImVec2 NODE_WINDOW_PADDING;
 
-	const ImVec2 NODE_WINDOW_PADDING = ImVec2(8.0f, 8.0f);
+private:
+	ImVec4 drawing_line_color;
 
 public:
-	StateMachinePainter(StateMachineLayer* current_layer, StateMachineInteraction* canvas)
+	StateMachinePainter(StateMachineLayer* current_layer, StateMachineInteraction* interaction)
 		: currentLayer(current_layer),
-		  interaction(canvas) {}
+		interaction(interaction)
+	{
+		windowSize = ImVec2(700, 700);
+		scrolling = ImVec2(0.0f, 0.0f);	/* canvas_pos + scrolling == window_pos */
+		canvas_origin = ImVec2(0.0f, 0.0f);
+		show_grid = true;
+
+		drawing_line_color = ImColor(100, 233, 233);
+		lineThickness = 3.0f;
+		NODE_WINDOW_PADDING = ImVec2(8.0f, 8.0f);
+	}
+
+	ImColor getDrawLineColor() const {
+		return ImColor(drawing_line_color);
+	}
 
 	/* this method is called when you start drawing your canvas, it won't work in other places. */
 	void udpateCanvasOrigin()
@@ -30,7 +46,7 @@ public:
 		canvas_origin = ImGui::GetCursorScreenPos() - scrolling;
 	}
 
-	void setLineThickness(const double thickness){
+	void setLineThickness(const double thickness) {
 		lineThickness = thickness;
 	}
 
