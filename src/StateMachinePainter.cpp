@@ -12,9 +12,15 @@ void StateMachinePainter::drawLayerPanel(StateMachine& sMachine) {
 		for (StateMachineLayer &_layer : sMachine.layers) {
 			ImGui::PushID(_layer.id); /* if you don't push/pop id, then imgui won't be able to distinguish InputText/Combo/... for different layers */
 
+			auto draw_list = ImGui::GetWindowDrawList();
+			draw_list->ChannelsSplit(2);
+
 			ImGui::Separator();
+
+			/* draw content of one layer in the panel */
 			ImGui::BeginGroup();
 			{
+				draw_list->ChannelsSetCurrent(1);	/* draw content on foreground */
 				ImGui::InputText("", _layer.name, sizeof(_layer.name) / sizeof(_layer.name[0]));
 				const char *items[] = { "Override", "Additive" }; /* can be improved */
 				ImGui::Text("Blending"); ImGui::SameLine();
@@ -22,11 +28,11 @@ void StateMachinePainter::drawLayerPanel(StateMachine& sMachine) {
 			}
 			ImGui::EndGroup();
 
+			auto _rectMin = ImGui::GetItemRectMin();
+			auto _rectMax = ImGui::GetItemRectMax();
+
 			/* select layer */
 			{
-				auto _rectMin = ImGui::GetItemRectMin();
-				auto _rectMax = ImGui::GetItemRectMax();
-
 				bool _click_active = false;
 				if (ImGui::IsMouseReleased(0) && _rectMin < ImGui::GetMousePos() && ImGui::GetMousePos() < _rectMax)
 					_click_active = true;
@@ -37,6 +43,12 @@ void StateMachinePainter::drawLayerPanel(StateMachine& sMachine) {
 					currentLayer = &_layer;
 				}
 			}
+
+			if (interaction->getLayerSelected() == _layer.id) {
+				draw_list->ChannelsSetCurrent(0);	/* draw highlight-background on background layer */
+				draw_list->AddRectFilled(_rectMin, _rectMax, ImColor(55, 70, 74));	/* color and shape is still ugly */
+			}
+			draw_list->ChannelsMerge();
 
 			ImGui::PopID();
 		}
