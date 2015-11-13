@@ -332,17 +332,24 @@ void StateMachinePainter::drawLinks(ImDrawList& draw_list) const {
 
 	for (std::pair<TransitionID, Transition> pair : currentLayer->transitions)
 	{
+		auto _id = pair.first;
 		auto _trans = pair.second;
 		auto from_pos = canvas_origin + currentLayer->states[_trans.fromID].center();
 		auto to_pos = canvas_origin + currentLayer->states[_trans.toID].center();
-		draw_list.AddLine(from_pos, to_pos, ImColor(200, 200, 100), lineThickness);
 		if (!interaction->hasDrawingLine && ImGui::IsMouseClicked(0) && currentLayer->onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && interaction->getStateHoveredInScene() < 0) {
-			interaction->selectTrans(pair.first);
-			printf("selected trans id %d\n", pair.first);
+			interaction->selectTrans(_id);
+			printf("selected trans id %d\n", _id);
 
 			/* todo: this line doesn't work right now */
 			//canvas->drawTriangleOnLine(draw_list, from_pos, to_pos, ImColor(255, 255, 255));
 		}
+
+		if(interaction->getTransSelected() == _id) {
+			draw_list.AddLine(from_pos, to_pos, ImColor(107, 178, 255), lineThickness + 1);
+		}else {
+			draw_list.AddLine(from_pos, to_pos, ImColor(233, 233, 233), lineThickness);
+		}
+
 	}
 }
 
