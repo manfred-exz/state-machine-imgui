@@ -31,7 +31,7 @@ private:
 	StateID nextStateID = 0;
 	TransitionID nextTransitionID = 0;
 
-	double lineThickness = 3.0f;
+//	double lineThickness = 3.0f;
 
 public:
 
@@ -70,45 +70,6 @@ public:
 
 		++nextStateID;
 		return nextStateID - 1;
-	}
-
-
-	void setLineThickness(const double& thickness)
-	{
-		lineThickness = thickness;
-	}
-
-	bool onTransitionLine(StateID from, StateID to, ImVec2 mousePos) const
-	{
-		auto from_pos = states[from].center();
-		auto to_pos = states[to].center();
-
-		auto A = to_pos.y - from_pos.y;
-		auto B = to_pos.x - from_pos.x;
-		auto C = to_pos.x * from_pos.y - from_pos.x * to_pos.y;
-		double numerator = A * mousePos.x - B* mousePos.y + C;
-		double denominator = A * A + B * B;
-		double squre_dist = numerator / denominator;
-
-		return squre_dist <= lineThickness * lineThickness ? true : false;
-	}
-
-	bool onTransitionLine(ImVec2 from_pos, ImVec2 to_pos, ImVec2 mousePos) const
-	{
-		/* test if mouse go out of rect_range(from_pos, to_pos) */
-		ImVec2 _test = (mousePos - from_pos) * (mousePos - to_pos);
-		if (_test.x > 0 || _test.y > 0)
-			return false;
-
-		double A = to_pos.y - from_pos.y;
-		double B = -(to_pos.x - from_pos.x);
-		double C = to_pos.x * from_pos.y - from_pos.x * to_pos.y;
-		double numerator = A * mousePos.x + B* mousePos.y + C;
-		double denominator = A * A + B * B;
-		double squre_dist = fabs(numerator * numerator / denominator);
-
-		/* use thickness/2 + 1 to better fit with visual effect */
-		return (squre_dist <= (lineThickness / 2 + 1) * (lineThickness / 2 + 1)) ? true : false;
 	}
 
 	void XMLsave() const
@@ -156,7 +117,6 @@ public:
 
 		nextStateID = node.attribute("nextStateID").as_int();
 		nextTransitionID = node.attribute("nextTransitionID").as_int();
-		lineThickness = node.attribute("lineThickness").as_double();
 
 		/* states */
 		{
@@ -246,11 +206,6 @@ public:
 				Transition _trans = _pair.second;
 				_trans.gen_xml_node(transitions_node, _id);
 			}
-		}
-
-		/* lineThickness */
-		{
-			_node.append_attribute("lineThickness") = lineThickness;
 		}
 	}
 

@@ -56,6 +56,20 @@ void StateMachinePainter::drawLayerPanel(StateMachine& sMachine) {
 	ImGui::EndChild();
 }
 
+bool StateMachinePainter::onTransitionLine(StateID from, StateID to, ImVec2 mousePos) const {
+	auto from_pos = currentLayer->states[from].center();
+	auto to_pos = currentLayer->states[to].center();
+
+	auto A = to_pos.y - from_pos.y;
+	auto B = to_pos.x - from_pos.x;
+	auto C = to_pos.x * from_pos.y - from_pos.x * to_pos.y;
+	double numerator = A * mousePos.x - B* mousePos.y + C;
+	double denominator = A * A + B * B;
+	double squre_dist = numerator / denominator;
+
+	return squre_dist <= lineThickness * lineThickness ? true : false;
+}
+
 void StateMachinePainter::drawNodeListBar() const
 {
 	/* node list: left bar*/
@@ -161,7 +175,7 @@ void StateMachinePainter::drawCanvas()
 						auto _trans = pair.second;
 						auto from_pos = canvas_origin + currentLayer->states[_trans.fromID].center();
 						auto to_pos = canvas_origin + currentLayer->states[_trans.toID].center();
-						if (currentLayer->onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && interaction->getStateHoveredInScene() < 0) {
+						if (onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && interaction->getStateHoveredInScene() < 0) {
 							//						canvas->selectTrans(pair.first);
 							ImGui::Text("hovered trans id %d", pair.first);
 						}
@@ -327,8 +341,6 @@ void StateMachinePainter::drawGrid(ImDrawList& draw_list) const
 
 void StateMachinePainter::drawLinks(ImDrawList& draw_list) const {
 	draw_list.ChannelsSetCurrent(0); /* background */
-	float lineThickness = 3.0f;
-	currentLayer->setLineThickness(lineThickness);
 
 	for (std::pair<TransitionID, Transition> pair : currentLayer->transitions)
 	{
@@ -336,10 +348,14 @@ void StateMachinePainter::drawLinks(ImDrawList& draw_list) const {
 		auto _trans = pair.second;
 		auto from_pos = canvas_origin + currentLayer->states[_trans.fromID].center();
 		auto to_pos = canvas_origin + currentLayer->states[_trans.toID].center();
+		auto mouse_pos = ImGui::GetMousePos();
 
-		if (!interaction->hasDrawingLine && ImGui::IsMouseClicked(0) && currentLayer->onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && interaction->getStateHoveredInScene() < 0) {
-			interaction->selectTrans(_id);
-			printf("selected trans id %d\n", _id);
+
+		if (!interaction->hasDrawingLine && ImGui::IsMouseClicked(0) &&  interaction->getStateHoveredInScene() < 0) {
+			if(_trans.fromID != _trans.toID && onTransitionLine(from_pos, to_pos, mouse_pos))
+				interaction->selectTrans(_id);
+			if (_trans.fromID == _trans.toID && onTransitionTriangle(currentLayer->states[_trans.fromID].anchorScreenPos(canvas_origin), mouse_pos))
+				interaction->selectTrans(_id);
 		}
 
 		auto _color = ImColor(0, 0, 0);
@@ -350,11 +366,11 @@ void StateMachinePainter::drawLinks(ImDrawList& draw_list) const {
 
 		if (_trans.fromID == _trans.toID) {
 			/* todo: transition from and to the same state */
-			interaction->darwSingleTriangle(draw_list, currentLayer->states[_trans.fromID].anchorScreenPos(canvas_origin), _color);
+			darwSingleTriangle(draw_list, currentLayer->states[_trans.fromID].anchorScreenPos(canvas_origin), _color);
 		}
 		else {
 			draw_list.AddLine(from_pos, to_pos, _color, lineThickness);
-			interaction->drawTriangleOnLine(draw_list, from_pos, to_pos, _color);
+			drawTriangleOnLine(draw_list, from_pos, to_pos, _color);
 		}
 	}
 }
@@ -413,3 +429,74 @@ void StateMachinePainter::drawContextMenu() const {
 	ImGui::PopStyleVar();
 }
 
+bool StateMachinePainter::onTransitionLine(ImVec2 from_pos, ImVec2 to_pos, ImVec2 mousePos) const {
+	/* test if mouse go out of rect_range(from_pos, to_pos) */
+	ImVec2 _test = (mousePos - from_pos) * (mousePos - to_pos);
+	if (_test.x > 0 || _test.y > 0)
+		return false;
+
+	double A = to_pos.y - from_pos.y;
+	double B = -(to_pos.x - from_pos.x);
+	double C = to_pos.x * from_pos.y - from_pos.x * to_pos.y;
+	double numerator = A * mousePos.x + B* mousePos.y + C;
+	double denominator = A * A + B * B;
+	double squre_dist = fabs(numerator * numerator / denominator);
+
+	/* use thickness/2 + 1 to better fit with visual effect */
+	return (squre_dist <= (lineThickness / 2 + 1) * (lineThickness / 2 + 1)) ? true : false;
+}
+
+bool StateMachinePainter::onTransitionTriangle(ImVec2 anchor_pos, ImVec2 mousePos) {
+	const double arrow_height = 10, arrow_width = 6;
+
+	ImVec2 t1, t2, t3;
+	t1 = anchor_pos;
+	t2 = anchor_pos + ImVec2(arrow_width, arrow_height);
+	t3 = anchor_pos + ImVec2(-arrow_width, arrow_height);
+
+	return isPointInTriangle(mousePos, t1, t2, t3);
+}
+
+bool StateMachinePainter::isPointInTriangle(ImVec2 pt, ImVec2 t1, ImVec2 t2, ImVec2 t3) {
+	double area = fabs(t1.x*(t2.y - t3.y) + t2.x*(t3.y - t1.y) + t3.x * (t1.y - t2.y)) / 2;
+
+	double s = 1 / (2 * area)*(t1.y*t3.x - t1.x*t3.y + (t3.y - t1.y)*pt.x + (t1.x - t3.x)*pt.y);
+	double t = 1 / (2 * area)*(t1.x*t2.y - t1.y*t2.x + (t1.y - t2.y)*pt.x + (t2.x - t1.x)*pt.y);
+
+	return (0 <= s && s <= 1) && (0 <= t && t <= 1) && s + t <= 1 ? true : false;
+}
+
+/* the following two function shouldn't be here, move to painter later. */
+void StateMachinePainter::drawTriangleOnLine(ImDrawList& draw_list, ImVec2 from_pos, ImVec2 to_pos, ImColor color, const double arrow_width)
+{
+	const double arrow_height = 10;
+
+	ImVec2 t1, t2, t3;
+	ImVec2 along, perp;
+
+	auto norm = [](ImVec2 vec) -> ImVec2
+	{
+		double len = std::sqrt(vec.x * vec.x + vec.y * vec.y);
+		return vec * (1 / len);
+	};
+
+	along = norm(to_pos - from_pos);
+	perp = ImVec2(-along.y, along.x);
+
+	t1 = (from_pos + to_pos) * 0.5;
+	t2 = t1 - along * arrow_height + perp * arrow_width;
+	t3 = t1 - along * arrow_height - perp * arrow_width;
+
+	draw_list.AddTriangleFilled(t1, t2, t3, color);
+}
+
+void StateMachinePainter::darwSingleTriangle(ImDrawList& draw_list, const ImVec2 anchor_pos, const ImColor color) {
+	const double arrow_height = 10, arrow_width = 6;
+
+	ImVec2 t1, t2, t3;
+	t1 = anchor_pos;
+	t2 = anchor_pos + ImVec2(arrow_width, arrow_height);
+	t3 = anchor_pos + ImVec2(-arrow_width, arrow_height);
+
+	draw_list.AddTriangleFilled(t1, t2, t3, color);
+}

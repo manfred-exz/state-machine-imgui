@@ -133,39 +133,4 @@ public:
 			open_context_menu = true;
 		}
 	}
-
-	/* the following two function shouldn't be here, move to painter later. */
-	static void drawTriangleOnLine(ImDrawList& draw_list, ImVec2 from_pos, ImVec2 to_pos, ImColor color, const double arrow_width = 6)
-	{
-		const double arrow_height = 10;
-
-		ImVec2 t1, t2, t3;
-		ImVec2 along, perp;
-
-		auto norm = [](ImVec2 vec) -> ImVec2
-		{
-			double len = std::sqrt(vec.x * vec.x + vec.y * vec.y);
-			return vec * (1 / len);
-		};
-
-		along = norm(to_pos - from_pos);
-		perp = ImVec2(-along.y, along.x);
-
-		t1 = (from_pos + to_pos) * 0.5;
-		t2 = t1 - along * arrow_height + perp * arrow_width;
-		t3 = t1 - along * arrow_height - perp * arrow_width;
-
-		draw_list.AddTriangleFilled(t1, t2, t3, color);
-	}
-
-	static void darwSingleTriangle(ImDrawList& draw_list, const ImVec2 anchor_pos, const ImColor color) {
-		const double arrow_height = 10, arrow_width = 6;
-
-		ImVec2 t1, t2, t3;
-		t1 = anchor_pos;
-		t2 = anchor_pos + ImVec2(arrow_width, arrow_height);
-		t3 = anchor_pos + ImVec2(-arrow_width, arrow_height);
-
-		draw_list.AddTriangleFilled(t1, t2, t3, color);
-	}
 };

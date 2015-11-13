@@ -101,9 +101,6 @@
     <ClInclude Include="..\libs\gl3w\GL\glcorearb.h">
       <Filter>gl3w</Filter>
     </ClInclude>
-    <ClInclude Include="extra.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\libs\pugixml\pugiconfig.hpp">
       <Filter>pugixml</Filter>
     </ClInclude>
