@@ -40,7 +40,7 @@ public:
 	ImColor darwing_line_color = ImColor(200, 50, 50);
 
 
-	StateMachineInteraction(){}
+	StateMachineInteraction() {}
 
 	/* get the idx layer, 0 is the front, -1 is the last layer*/
 	int layer(const int& idx) const {
@@ -50,12 +50,12 @@ public:
 	}
 
 	/* some temperory field should be cleared. */
-	void updateFrame(){
+	void updateFrame() {
 		open_context_menu = false;
-		state_hovered_in_list = state_hovered_in_scene = state_widget_hovered  = -1;
+		state_hovered_in_list = state_hovered_in_scene = state_widget_hovered = -1;
 	}
 
-	void selectState(StateID id){
+	void selectState(StateID id) {
 		state_selected = id;
 		trans_selected = -1;
 	}
@@ -67,16 +67,16 @@ public:
 		layer_selected = id;
 	}
 
-	void hoverStateList(StateID id){state_hovered_in_list = id;}
+	void hoverStateList(StateID id) { state_hovered_in_list = id; }
 
-	void hoverStateScene(StateID id){state_hovered_in_scene = id;}
+	void hoverStateScene(StateID id) { state_hovered_in_scene = id; }
 
-	void selectTrans(TransitionID id){
+	void selectTrans(TransitionID id) {
 		trans_selected = id;
 		state_selected = -1;
 	}
 
-	void cancelSelectTrans(){trans_selected = -1;}
+	void cancelSelectTrans() { trans_selected = -1; }
 
 	LayerID getLayerSelected() const {
 		return layer_selected;
@@ -134,9 +134,10 @@ public:
 		}
 	}
 
-	void drawTriangleOnLine(ImDrawList* draw_list, ImVec2 from_pos, ImVec2 to_pos, ImColor color) const
+	/* the following two function shouldn't be here, move to painter later. */
+	static void drawTriangleOnLine(ImDrawList& draw_list, ImVec2 from_pos, ImVec2 to_pos, ImColor color, const double arrow_width = 6)
 	{
-		const double arrow_height = 8, arrow_wighth = 3;
+		const double arrow_height = 10;
 
 		ImVec2 t1, t2, t3;
 		ImVec2 along, perp;
@@ -151,9 +152,20 @@ public:
 		perp = ImVec2(-along.y, along.x);
 
 		t1 = (from_pos + to_pos) * 0.5;
-		t2 = t1 - along * arrow_height + perp * arrow_wighth;
-		t3 = t1 - along * arrow_height - perp * arrow_wighth;
+		t2 = t1 - along * arrow_height + perp * arrow_width;
+		t3 = t1 - along * arrow_height - perp * arrow_width;
 
-		draw_list->AddTriangleFilled(t1, t2, t3, color);
+		draw_list.AddTriangleFilled(t1, t2, t3, color);
+	}
+
+	static void darwSingleTriangle(ImDrawList& draw_list, const ImVec2 anchor_pos, const ImColor color) {
+		const double arrow_height = 10, arrow_width = 6;
+
+		ImVec2 t1, t2, t3;
+		t1 = anchor_pos;
+		t2 = anchor_pos + ImVec2(arrow_width, arrow_height);
+		t3 = anchor_pos + ImVec2(-arrow_width, arrow_height);
+
+		draw_list.AddTriangleFilled(t1, t2, t3, color);
 	}
 };

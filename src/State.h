@@ -49,35 +49,40 @@ public:
 	}
 
 
-	State(StateID id,const char* name, const ImVec2& pos, const ImVec2& size, const ImVec4& color, StateType type, const std::vector<TransitionID>& transitions, bool is_default)
+	State(StateID id, const char* name, const ImVec2& pos, const ImVec2& size, const ImVec4& color, StateType type, const std::vector<TransitionID>& transitions, bool is_default)
 		: id(id),
-		  pos(pos),
-		  size(size),
-		  color(color),
-		  type(type),
-		  transitions(transitions),
-		  isDefault(is_default)
+		pos(pos),
+		size(size),
+		color(color),
+		type(type),
+		transitions(transitions),
+		isDefault(is_default)
 	{
 		strncpy_s(this->name, name, 31);
 		this->name[31] = 0;
 	}
 
-	char * typeStr() const
-	{
+	char * typeStr() const {
 		char *_str[] = { "normal", "entry", "any", "exit" };
 
 		return _str[int(type)];
 	}
 
-	ImVec2 drawPos() const
-	{
+	ImVec2 drawPos() const {
 		return center();
 	}
 
 	/* todo:you have to make sure the field.size is updated. */
-	ImVec2 center() const
-	{
+	ImVec2 center() const {
 		return pos + ImVec2(size.x / 2, size.y / 2);
+	}
+
+	ImVec2 anchorPos() const {
+		return pos + ImVec2(size.x / 2, size.y + 5);
+	}
+
+	ImVec2 anchorScreenPos(ImVec2 canvasOrigin) const {
+		return  canvasOrigin + pos + ImVec2(size.x / 2, size.y + 5);
 	}
 
 	ImVec2 rectMin(ImVec2 canvasOrigin) const

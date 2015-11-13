@@ -336,20 +336,26 @@ void StateMachinePainter::drawLinks(ImDrawList& draw_list) const {
 		auto _trans = pair.second;
 		auto from_pos = canvas_origin + currentLayer->states[_trans.fromID].center();
 		auto to_pos = canvas_origin + currentLayer->states[_trans.toID].center();
+
 		if (!interaction->hasDrawingLine && ImGui::IsMouseClicked(0) && currentLayer->onTransitionLine(from_pos, to_pos, ImGui::GetMousePos()) && interaction->getStateHoveredInScene() < 0) {
 			interaction->selectTrans(_id);
 			printf("selected trans id %d\n", _id);
-
-			/* todo: this line doesn't work right now */
-			//canvas->drawTriangleOnLine(draw_list, from_pos, to_pos, ImColor(255, 255, 255));
 		}
 
-		if(interaction->getTransSelected() == _id) {
-			draw_list.AddLine(from_pos, to_pos, ImColor(107, 178, 255), lineThickness + 1);
-		}else {
-			draw_list.AddLine(from_pos, to_pos, ImColor(233, 233, 233), lineThickness);
-		}
+		auto _color = ImColor(0, 0, 0);
+		if (interaction->getTransSelected() == _id)
+			_color = ImColor(107, 178, 255);
+		else
+			_color = ImColor(233, 233, 233);
 
+		if (_trans.fromID == _trans.toID) {
+			/* todo: transition from and to the same state */
+			interaction->darwSingleTriangle(draw_list, currentLayer->states[_trans.fromID].anchorScreenPos(canvas_origin), _color);
+		}
+		else {
+			draw_list.AddLine(from_pos, to_pos, _color, lineThickness);
+			interaction->drawTriangleOnLine(draw_list, from_pos, to_pos, _color);
+		}
 	}
 }
 
