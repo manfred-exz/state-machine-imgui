@@ -350,7 +350,14 @@ void StateMachinePainter::drawLinks(ImDrawList& draw_list) const {
 		auto to_pos = canvas_origin + currentLayer->states[_trans.toID].center();
 		auto mouse_pos = ImGui::GetMousePos();
 
-		/* draw transitions */
+
+		if (!interaction->hasDrawingLine && ImGui::IsMouseClicked(0) &&  interaction->getStateHoveredInScene() < 0) {
+			if(_trans.fromID != _trans.toID && onTransitionLine(from_pos, to_pos, mouse_pos))
+				interaction->selectTrans(_id);
+			if (_trans.fromID == _trans.toID && onTransitionTriangle(currentLayer->states[_trans.fromID].anchorScreenPos(canvas_origin), mouse_pos))
+				interaction->selectTrans(_id);
+		}
+
 		auto _color = ImColor(0, 0, 0);
 		if (interaction->getTransSelected() == _id)
 			_color = ImColor(107, 178, 255);
@@ -358,19 +365,12 @@ void StateMachinePainter::drawLinks(ImDrawList& draw_list) const {
 			_color = ImColor(233, 233, 233);
 
 		if (_trans.fromID == _trans.toID) {
+			/* todo: transition from and to the same state */
 			darwSingleTriangle(draw_list, currentLayer->states[_trans.fromID].anchorScreenPos(canvas_origin), _color);
 		}
 		else {
 			draw_list.AddLine(from_pos, to_pos, _color, lineThickness);
 			drawTriangleOnLine(draw_list, from_pos, to_pos, _color);
-		}
-
-		/* check interaction */
-		if (!interaction->hasDrawingLine && ImGui::IsMouseClicked(0) && interaction->getStateHoveredInScene() < 0) {
-			if (_trans.fromID != _trans.toID && onTransitionLine(from_pos, to_pos, mouse_pos))
-				interaction->selectTrans(_id);
-			if (_trans.fromID == _trans.toID && onTransitionTriangle(currentLayer->states[_trans.fromID].anchorScreenPos(canvas_origin), mouse_pos))
-				interaction->selectTrans(_id);
 		}
 	}
 }
@@ -382,7 +382,7 @@ void StateMachinePainter::drawUnfinishedLine(ImDrawList& draw_list) const {
 	if (interaction->hasDrawingLine)
 	{
 		interaction->drawing_line_end = ImGui::GetMousePos();
-		draw_list.AddLine(interaction->drawing_line_start, interaction->drawing_line_end, getDrawLineColor());
+		draw_list.AddLine(interaction->drawing_line_start, interaction->drawing_line_end, interaction->darwing_line_color);
 	}
 
 	/* finish drawing */
@@ -412,6 +412,7 @@ void StateMachinePainter::drawContextMenu() const {
 				interaction->hasDrawingLine = true;
 				interaction->transition_start_id = node->id;
 				interaction->drawing_line_start = node->center() + canvas_origin;
+				interaction->darwing_line_color = ImColor(100, 255, 255);
 				printf("start form node id %d with node name %s\n", node->id, node->name);
 			};
 			if (ImGui::MenuItem("Rename..", nullptr, false, false)) {}
@@ -420,7 +421,7 @@ void StateMachinePainter::drawContextMenu() const {
 		}
 		else
 		{
-			if (ImGui::MenuItem("Add")) { currentLayer->addState("New node", scene_pos, std::vector<StateID>()); }
+			if (ImGui::MenuItem("Add")) { currentLayer->addState("New node", scene_pos, std::vector<StateID>{}); }
 			if (ImGui::MenuItem("Paste", nullptr, false, false)) {}
 		}
 		ImGui::EndPopup();

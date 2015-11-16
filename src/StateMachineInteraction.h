@@ -16,43 +16,31 @@ class StateMachineInteraction
 {
 private:
 	/* select/hover operation and right click operation */
-	LayerID layer_selected;
+	LayerID layer_selected = -1;
 
-	StateID state_hovered_in_list;
-	StateID state_hovered_in_scene;
-	StateID state_widget_hovered;
+	StateID state_hovered_in_list = -1;
+	StateID state_hovered_in_scene = -1;
+	StateID state_widget_hovered = -1;
 
-	StateID state_selected;
-	TransitionID trans_selected;
-	bool open_context_menu;
+	StateID state_selected = -1;
+	TransitionID trans_selected = -1;
+	bool open_context_menu = false;
 
 public:
 	/* canvas attributes */
-	bool node_debug;
 
-	static const int NUM_LAYERS = 4;
 
-	bool hasDrawingLine;
-	StateID transition_start_id;
+	bool node_debug = true;
+
+	const int NUM_LAYERS = 4;
+
+	bool hasDrawingLine = false;
+	StateID transition_start_id = -1;
 	ImVec2 drawing_line_start, drawing_line_end;
+	ImColor darwing_line_color = ImColor(200, 50, 50);
 
-	StateMachineInteraction() {
-		layer_selected = -1;
 
-		state_hovered_in_list = -1;
-		state_hovered_in_scene = -1;
-		state_widget_hovered = -1;
-
-		state_selected = -1;
-		trans_selected = -1;
-		open_context_menu = false;
-
-		node_debug = true;
-
-		hasDrawingLine = false;
-		transition_start_id = -1;
-		drawing_line_start, drawing_line_end;
-	}
+	StateMachineInteraction() {}
 
 	/* get the idx layer, 0 is the front, -1 is the last layer*/
 	int layer(const int& idx) const {
